@@ -2,7 +2,7 @@
 #hashbang line, tells the script it should use bash to interpret its content
 
 
-# Script by Dominic Egger 03/14/2020
+# Script by DTE 03/14/2020
 # Last update: 04/20/2020
 # this script is designed to create an in situ .pbs file from a given .com input file and submit the job automatically to the MSI
 
@@ -19,13 +19,13 @@
 # a .pbs file will be created automatically and submitted to the designated queue. The .pbs file will later be removed. If you want to keep your .pbs file
 # then comment the function call tabula_rasa in the main function by adding a # in front of it
 # Update History
-# Dominic Egger 03/16/2020 original
-# Connor Frye 03/27/2020 removed tilde from shebang to allow for method 1 of access, added chmod instructions
-# Dominic Egger 03/31/2020 the instructions to edit your .bashrc were wrong - thanks Yukun for pointing this out to me - it should be export PATH=~/bin:$PATH   colon instead of =!
-# Dominic Egger 04/06/2020 added the part of the get_par function that also allows the user to enter a designated amount of processors to be used
-# Dominic Egger 04/20/2020 added the joblog function, which will create a file called joblog.txt in your home directory with a log of jobs you submitted
-# Connor Frye 04/20/2020 for personal version, changed email settings and removed jokes function
-# Connor Frye 04/21/2020 for personal version, changed joblog to store path rather than only file name
+# DTE 03/16/2020 original
+# CWF 03/27/2020 removed tilde from shebang to allow for method 1 of access, added chmod instructions
+# DTE 03/31/2020 the instructions to edit your .bashrc were wrong - thanks Yukun for pointing this out to me - it should be export PATH=~/bin:$PATH   colon instead of =!
+# DTE 04/06/2020 added the part of the get_par function that also allows the user to enter a designated amount of processors to be used
+# DTE 04/20/2020 added the joblog function, which will create a file called joblog.txt in your home directory with a log of jobs you submitted
+# CWF 04/20/2020 for personal version, changed email settings and removed jokes function
+# CWF 04/21/2020 for personal version, changed joblog to store path rather than only file name
 #============================================= Begin of script =================================================================================
 
 
