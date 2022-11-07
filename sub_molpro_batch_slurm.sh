@@ -1,7 +1,6 @@
 #!/bin/bash
 #hashbang line, tells the script it should use bash to interpret its content
 
-
 #============================================= Begin of script =================================================================================
 
 
@@ -34,12 +33,12 @@ SCRIPTPATH="$(dirname "$0")"
 
 function update_variables(){
 cd $SCRIPTPATH
-context="script_variables_sub_molpro_slurm.db"
+context="script_variables_sub_molpro_slurm_batch.db"
 if [ -f $context ]; then
  echo "loading current parameters..."
 else
-echo "creating script_variables_sub_molpro_slurm.db to set default parameters..."
-        cat > script_variables_sub_molpro_slurm.db << EOL
+echo "creating script_variables_sub_molpro_slurm_batch.db to set default parameters..."
+        cat > script_variables_sub_molpro_slurm_batch.db << EOL
 Number of processors=
 32
 Memory (mb)=
@@ -55,94 +54,12 @@ EOL
 fi
 
 mapfile -t -O 1 var <$context
-n_proc=${var[2]}
+n_procs=${var[2]}
 w_mem=${var[4]}
 w_time=${var[6]}
 which_q=${var[8]}
 cd - > /dev/null
 }
-
-function default_par (){
-# asks user if they want to modify parameters, if other answer is pressed assumes no
-echo
-echo -e "\e[0;33mThese are the default parameters:\e[0m" 
-echo -e
-echo -e "\e[0mProcessors =" 	$n_proc
-echo "Memory =" 		$w_mem
-echo "Time =" 			$w_time
-echo "Queue =" 			$which_q
-echo -e
-echo -e "\e[92mSelect [Y, y, 1, or enter] to continue"
-echo -e "\e[1;31mSelect [N, n, or 2] to exit"
-echo -e "\e[35mSelect [3] to edit default parameters (using nano), re-run script once your edits are complete \e[0m"
-
-read answer
-
-case "$answer" in
-# Note variable is quoted.
-
-  "Y" | "y" | "1" | "yes" |"Yes" )
-  # Accept upper or lowercase input or 1.
- 	#will read user answer, w_proc is the string that is needed when writing .com, call back to with $w_proc
-
-  ;;
-  
-    "N" | "n" | "2" | "no" |"No" |"NO" )
-  # Accept upper or lowercase input or 1.
- 	#will read user answer, w_proc is the string that is needed when writing .com, call back to with $w_proc
-	exit
-  ;;
-# Note double semicolon to terminate each option.
-
-    "3" )
-  # Accept upper or lowercase input or 1.
- 	#will read user answer, w_proc is the string that is needed when writing .com, call back to with $w_proc
-	cd $SCRIPTPATH
-	nano $context
-	exit
-  ;;
-  
-esac
-
-}
-function get_par (){
-	echo "Walltime in hours? default will result in" ${var[6]} hours
-	read w_time
-
-	if [ -z $w_time ];
-	then
-	w_time=${var[6]}
-	fi
-	#echo $w_time
-
-	echo "How many processors do you request for this calculation? default will result in" ${var[2]}
-	read n_procs
-
-	if [ -z $n_procs ];
-	then
-	n_procs=${var[2]}
-	fi
-
-	echo "How much memory do you request for this calculation? default will result in" ${var[4]}
-	read w_mem
-
-	if [ -z $w_mem ];
-	then
-	w_mem=${var[4]}
-	fi
-
-	
-	echo "Which queue would you like to use? (default will result in msismall)"
-	read which_q
-
-	if [ -z $which_q ];
-	then
-	which_q="msismall"
-	fi
-	
-	#echo $which_q
-}
-
 
 function write_slurm (){ 
 #in the following it will create the slurm.sh file
@@ -181,8 +98,6 @@ EOL
 
 function queue (){
 	sbatch "$name".sh #this will submit the slurm sh file to the designated queue
-	squeue -al --me #this will immediately check if it has been submitted
-	sprio -u $USER			   
 }
 
 function tabula_rasa (){
@@ -199,19 +114,11 @@ function joblog (){ #this function will always write the date and time as well a
 
 
 
-function slurmhistory-yesterday(){
-d=`date +%F -d "1 day ago"`
-sacct -X --starttime $d --format=JobID,Jobname%50,state,elapsed,time,end
-}
-
 function main (){
 	#get_mem #read the info on memory from input .com
 	update_variables
-	default_par		
-	get_par #ask for walltime and desired queue
 	write_slurm #generate slurm sh file
 	queue    #submit the slurm .sh file to the queue
-	# slurmhistory-yesterday
 	tabula_rasa #delete the in situ generated slurm .sh file
 	joblog
 }
